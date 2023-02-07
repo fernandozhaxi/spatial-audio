@@ -11,9 +11,9 @@ const app = express(),
   server = http.createServer(app);
 
 // Config
-const TRACKS_PATH = "./multitrack"
+const TRACKS_PATH = "./client/multitrack"
 app.use(express.json())
-app.use(express.static(path.resolve(__dirname, "public")));
+app.use(express.static(path.resolve(__dirname, "client")));
 // launch the http server on given port
 server.listen(9999, "192.168.31.68", () => {
   const addr = server.address();
@@ -33,15 +33,12 @@ app.post("/api/getInfo", async (req, res) => {
     .map(fileName => ({
       name: fileName.match(/(.*)\.[^.]+$/, "")[1],
       sound: fileName,
-      url: TRACKS_PATH +`/${soneName}/${fileName}`,
-      volume: 100
+      url: 'multitrack' +`/${soneName}/${fileName}`,
+      volume: 100,
+      startTime: 10, // s
+      endTime: 15 // s
     }))
-  res.write(JSON.stringify({
-    songName: 'Hells_Bells',
-    startTime: 107,
-    endTime: 110,
-    tracks
-  }));
+  res.write(JSON.stringify(tracks));
   res.end();
 });
 

@@ -1,6 +1,6 @@
-export default function BufferLoader(context, urlList, callback) {
+export default function BufferLoader(context, tracks, callback) {
   this.context = context;
-  this.urlList = urlList;
+  this.urlList = tracks.map(item => item.url);
   this.onload = callback;
   this.bufferList = [];
   this.loadCount = 0;
