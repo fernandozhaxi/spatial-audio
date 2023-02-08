@@ -81,15 +81,11 @@ const finishedLoading = (bufferList) => {
   }
   // connect the analyzer to the speakers
   state.analyserNode.connect(context.destination);
-  console.log("sources666", sources);
-  // samples = the sound samples, it is necessary to store them in a
-  // variable in order to be able so start/stop/pause the song
   sources.forEach((node, index) => {
     // First parameter is the delay before playing the sample
     // second one is the offset in the song, in seconds, can be 2.3456
-    // very high precision !
-    console.log("start", state.tracks[index].startTime);
     node.start(0, state.tracks[index].startTime);
+    console.log("start", state.tracks[index].startTime);
   });
   state.sampleNodes = sources;
 };

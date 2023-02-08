@@ -4,6 +4,12 @@ const fs = require("fs");
 // We need to use the express framework: have a real web server that knows how to send mime types etc.
 const express = require("express");
 const path = require("path");
+var http = require('http');
+var https = require('https');
+
+var privateKey  = fs.readFileSync('./private.pem', 'utf8');
+var certificate = fs.readFileSync('./file.crt', 'utf8');
+var credentials = { key: privateKey, cert: certificate };
 
 // Init globals variables for each module required
 const app = express(),
@@ -24,7 +30,8 @@ app.get("/", (req, res) => res.sendfile(__dirname + "/client/index.html"));
 
 // TODO dynamic calculation
 app.post("/api/getInfo", async (req, res) => {
-  const params = req
+  const params = req.body
+  console.log('params:', params);
   const soneName = 'Hells_Bells'
   const fileNames = await getFiles(`${TRACKS_PATH}/${soneName}`);
   res.writeHead(200, { "Content-Type": "application/json" });
