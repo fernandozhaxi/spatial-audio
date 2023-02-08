@@ -149,6 +149,7 @@ const start = (e) => {
     window.removeEventListener("deviceorientation", handleOrientation);
     startText.value = "Start";
     isRunning.value = false;
+    emits('change', null)
   } else {
     window.addEventListener("devicemotion", handleMotion);
     window.addEventListener("deviceorientation", handleOrientation);

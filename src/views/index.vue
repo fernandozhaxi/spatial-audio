@@ -13,7 +13,11 @@ import Sensor from "./Sensor/Sensor.vue";
 
 const sensorChange = (params) => {
   console.log(params);
-  sendRequest();
+  if (params) {
+    sendRequest();
+  } else {
+    stopAllTracks()
+  }
 };
 
 let context = getAudioContext();
