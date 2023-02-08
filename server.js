@@ -15,7 +15,7 @@ const TRACKS_PATH = "./client/multitrack"
 app.use(express.json())
 app.use(express.static(path.resolve(__dirname, "client")));
 // launch the http server on given port
-server.listen(9999, "192.168.31.68", () => {
+server.listen(9999, "172.16.8.66", () => {
   const addr = server.address();
   console.log("server listening at", addr.address + ":" + addr.port);
 });

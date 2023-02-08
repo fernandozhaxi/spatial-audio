@@ -27,6 +27,7 @@ const state = reactive({
   tracks: [],
   sampleNodes: [],
   trackVolumeNodes: [],
+  analyserNode: null,
 });
 
 function Track(instrument) {
@@ -52,7 +53,7 @@ const loadAllTracks = (tracks) => {
     trackList.push(new Track(track));
   });
   state.tracks = trackList;
-  console.log('trackList', trackList);
+  console.log("trackList", trackList);
   loadTrackSound(trackList);
 };
 
@@ -60,6 +61,7 @@ const finishedLoading = (bufferList) => {
   bufferList.forEach((item, index) => {
     state.tracks[index].decodedBuffer = item;
   });
+  state.analyserNode = context.createAnalyser();
   var sources = [];
   for (var i = 0; i < state.tracks.length; i++) {
     // each sound sample is the  source of a graph
@@ -70,15 +72,19 @@ const finishedLoading = (bufferList) => {
     state.trackVolumeNodes[i].gain.value = state.tracks[i].volume;
     // Connect the sound sample to its volume node
     sources[i].connect(state.trackVolumeNodes[i]);
+    // Connects all track volume nodes a single master volume node
+    state.trackVolumeNodes[i].connect(state.analyserNode);
   }
-  console.log('sources', sources);
+  // connect the analyzer to the speakers
+  state.analyserNode.connect(context.destination);
+  console.log("sources666", sources);
   // samples = the sound samples, it is necessary to store them in a
   // variable in order to be able so start/stop/pause the song
-  sources.forEach((node,index) => {
+  sources.forEach((node, index) => {
     // First parameter is the delay before playing the sample
     // second one is the offset in the song, in seconds, can be 2.3456
     // very high precision !
-    console.log('start', state.tracks[index].startTime);
+    console.log("start", state.tracks[index].startTime);
     node.start(0, state.tracks[index].startTime);
   });
   state.sampleNodes = sources;
