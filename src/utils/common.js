@@ -3,9 +3,7 @@ export function debounce(fn, wait) {
   let timerId = null;
 
   function debounced() {
-    // 保存作用域
     let context = this;
-    // 保存参数，例如 event 对象
     let args = arguments;
     clearTimeout(timerId);
     timerId = setTimeout(function () {
@@ -13,8 +11,32 @@ export function debounce(fn, wait) {
     }, wait);
   }
 
-  // 返回一个闭包
   return debounced;
+}
+
+export function throttle(fn, wait) {
+  let callback = fn;
+  let timerId = null;
+  let firstInvoke = true;
+  function throttled() {
+    let context = this;
+    let args = arguments;
+    if (firstInvoke) {
+      callback.apply(context, args);
+      firstInvoke = false;
+      return;
+    }
+    if (timerId) {
+      return;
+    }
+    timerId = setTimeout(function () {
+      clearTimeout(timerId);
+      timerId = null;
+
+      callback.apply(context, args);
+    }, wait);
+  }
+  return throttled;
 }
 
 export const getAudioContext = () => {

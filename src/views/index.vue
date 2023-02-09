@@ -23,8 +23,7 @@ let lastTime
 const sendRequest = (params) => {
   const now = new Date().getTime()
   if (now - lastTime < 3000) return
-  console.log('请求服务器', params);
-  axios.post("/api/getInfo").then((res) => {
+  axios.post("/api/getInfo", params).then((res) => {
     const list = res.data
     if (list.length) {
       loadAllTracks(res.data);
@@ -41,19 +40,13 @@ const state = reactive({
 });
 
 function Track(instrument) {
-  // name of the track : bass, guitar, voice, etc.
   this.name = instrument.name;
-  // url of the track in the form http://.../track/track_name
   this.url = instrument.url;
   this.startTime = instrument.startTime;
   this.endTime = instrument.endTime;
-  // decoded audio buffer
   this.decodedBuffer;
-  // current volume
   this.volume = 1;
-  // the web audio nodes that compose this track
   this.sampleNode;
-  // volume for this track
   this.volumeNode;
 }
 
