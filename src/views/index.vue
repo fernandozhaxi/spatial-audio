@@ -6,26 +6,32 @@
 <script setup>
 import axios from "axios";
 import { reactive } from "vue";
-import { debounce } from "@/utils/common";
 import { getAudioContext } from "@/utils/common";
 import BufferLoader from "./buffer-loader.js";
 import Sensor from "./Sensor/Sensor.vue";
 
 const sensorChange = (params) => {
-  console.log(params);
   if (params) {
-    sendRequest();
+    sendRequest(params);
   } else {
     stopAllTracks()
   }
 };
 
 let context = getAudioContext();
-const sendRequest = debounce(() => {
+let lastTime
+const sendRequest = (params) => {
+  const now = new Date().getTime()
+  if (now - lastTime < 3000) return
+  console.log('请求服务器', params);
   axios.post("/api/getInfo").then((res) => {
-    loadAllTracks(res.data);
+    const list = res.data
+    if (list.length) {
+      loadAllTracks(res.data);
+      lastTime = new Date().getTime()
+    }
   });
-}, 2000);
+};
 
 const state = reactive({
   tracks: [],
@@ -99,7 +105,6 @@ const startTask = (track, node, vNode) => {
   const offsetTime = end - start
   setTimeout(() => {
     node.stop()
-    console.log('停止', track);
   }, offsetTime * 1000)
 }
 

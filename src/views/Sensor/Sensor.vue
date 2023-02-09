@@ -3,64 +3,64 @@
       <h4 style="margin-top: 0.75rem">Orientation</h4>
       <ul>
         <li>
-          X-axis (&beta;): <span id="Orientation_b">{{ Orientation_b }}</span
+          X-axis (&beta;): <span id="Orientation_b">{{ data.Orientation_b }}</span
           ><span>&deg;</span>
         </li>
         <li>
-          Y-axis (&gamma;): <span id="Orientation_g">{{ Orientation_g }}</span
+          Y-axis (&gamma;): <span id="Orientation_g">{{ data.Orientation_g }}</span
           ><span>&deg;</span>
         </li>
         <li>
-          Z-axis (&alpha;): <span id="Orientation_a">{{ Orientation_a }}</span
+          Z-axis (&alpha;): <span id="Orientation_a">{{ data.Orientation_a }}</span
           ><span>&deg;</span>
         </li>
       </ul>
       <h4>Accelerometer</h4>
       <ul>
         <li>
-          X-axis: <span id="Accelerometer_x">{{ Accelerometer_x }}</span
+          X-axis: <span id="Accelerometer_x">{{ data.Accelerometer_x }}</span
           ><span> m/s<sup>2</sup></span>
         </li>
         <li>
-          Y-axis: <span id="Accelerometer_y">{{ Accelerometer_y }}</span
+          Y-axis: <span id="Accelerometer_y">{{ data.Accelerometer_y }}</span
           ><span> m/s<sup>2</sup></span>
         </li>
         <li>
-          Z-axis: <span id="Accelerometer_z">{{ Accelerometer_z }}</span
+          Z-axis: <span id="Accelerometer_z">{{ data.Accelerometer_z }}</span
           ><span> m/s<sup>2</sup></span>
         </li>
         <li>
-          Data Interval: <span id="Accelerometer_i">{{ Accelerometer_i }}</span
+          Data Interval: <span id="Accelerometer_i">{{ data.Accelerometer_i }}</span
           ><span> ms</span>
         </li>
       </ul>
       <h4>Accelerometer including gravity</h4>
       <ul>
         <li>
-          X-axis: <span id="Accelerometer_gx">{{ Accelerometer_gx }}</span
+          X-axis: <span id="Accelerometer_gx">{{ data.Accelerometer_gx }}</span
           ><span> m/s<sup>2</sup></span>
         </li>
         <li>
-          Y-axis: <span id="Accelerometer_gy">{{ Accelerometer_gy }}</span
+          Y-axis: <span id="Accelerometer_gy">{{ data.Accelerometer_gy }}</span
           ><span> m/s<sup>2</sup></span>
         </li>
         <li>
-          Z-axis: <span id="Accelerometer_gz">{{ Accelerometer_gz }}</span
+          Z-axis: <span id="Accelerometer_gz">{{ data.Accelerometer_gz }}</span
           ><span> m/s<sup>2</sup></span>
         </li>
       </ul>
       <h4>Gyroscope</h4>
       <ul>
         <li>
-          X-axis: <span id="Gyroscope_x">{{ Gyroscope_x }}</span
+          X-axis: <span id="Gyroscope_x">{{ data.Gyroscope_x }}</span
           ><span>&deg;/s</span>
         </li>
         <li>
-          Y-axis: <span id="Gyroscope_y">{{ Gyroscope_y }}</span
+          Y-axis: <span id="Gyroscope_y">{{ data.Gyroscope_y }}</span
           ><span>&deg;/s</span>
         </li>
         <li>
-          Z-axis: <span id="Gyroscope_z">{{ Gyroscope_z }}</span
+          Z-axis: <span id="Gyroscope_z">{{ data.Gyroscope_z }}</span
           ><span>&deg;/s</span>
         </li>
       </ul>
@@ -78,19 +78,21 @@
 <script setup>
 import { ref, reactive, toRefs } from "vue";
 const state = reactive({
-  Orientation_a: 0,
-  Orientation_b: 0,
-  Orientation_g: 0,
-  Accelerometer_gx: 0,
-  Accelerometer_gy: 0,
-  Accelerometer_gz: 0,
-  Accelerometer_x: 0,
-  Accelerometer_y: 0,
-  Accelerometer_z: 0,
-  Accelerometer_i: 0,
-  Gyroscope_z: 0,
-  Gyroscope_x: 0,
-  Gyroscope_y: 0,
+  data: {
+    Orientation_a: 0,
+    Orientation_b: 0,
+    Orientation_g: 0,
+    Accelerometer_gx: 0,
+    Accelerometer_gy: 0,
+    Accelerometer_gz: 0,
+    Accelerometer_x: 0,
+    Accelerometer_y: 0,
+    Accelerometer_z: 0,
+    Accelerometer_i: 0,
+    Gyroscope_z: 0,
+    Gyroscope_x: 0,
+    Gyroscope_y: 0,
+  }
 });
 
 
@@ -102,12 +104,12 @@ const  handleOrientation = (event) => {
   updateField("Orientation_b", event.beta);
   updateField("Orientation_g", event.gamma);
   emits('change', {
-    ...state
+    ...state.data
   })
 }
 
 const updateField = (key, value, precision = 10) => {
-  if (value) state[key] = value.toFixed(precision);
+  if (value) state.data[key] = value.toFixed(precision);
 };
 
 const handleMotion = (event) => {
@@ -131,11 +133,12 @@ const handleMotion = (event) => {
   updateField("Gyroscope_x", event.rotationRate.beta);
   updateField("Gyroscope_y", event.rotationRate.gamma);
   emits('change', {
-    ...state
+    ...state.data
   })
 };
 const emits = defineEmits(['change'])
 const start = (e) => {
+  console.log('start listen');
   e.preventDefault();
   // Request permission for iOS 13+ devices
   if (
@@ -156,27 +159,13 @@ const start = (e) => {
     startText.value = "Stop";
     isRunning.value = true;
     emits('change', {
-      ...state
+      ...state.data
     })
   }
 };
 
-
-
 const {
-  Orientation_a,
-  Orientation_b,
-  Orientation_g,
-  Accelerometer_gx,
-  Accelerometer_gy,
-  Accelerometer_gz,
-  Accelerometer_x,
-  Accelerometer_y,
-  Accelerometer_z,
-  Accelerometer_i,
-  Gyroscope_z,
-  Gyroscope_x,
-  Gyroscope_y,
+ data
 } = toRefs(state);
 
 </script>
