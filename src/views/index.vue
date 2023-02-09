@@ -84,11 +84,24 @@ const finishedLoading = (bufferList) => {
   sources.forEach((node, index) => {
     // First parameter is the delay before playing the sample
     // second one is the offset in the song, in seconds, can be 2.3456
-    node.start(0, state.tracks[index].startTime);
-    console.log("start", state.tracks[index].startTime);
+    const track = state.tracks[index]
+    const VolumeNodes = state.trackVolumeNodes[index]
+    startTask(track, node, VolumeNodes)
   });
   state.sampleNodes = sources;
 };
+
+const startTask = (track, node, vNode) => {
+  vNode.gain.value = track.volume
+  node.start(0, track.startTime);
+  const start = track.startTime
+  const end = track.endTime
+  const offsetTime = end - start
+  setTimeout(() => {
+    node.stop()
+    console.log('停止', track);
+  }, offsetTime * 1000)
+}
 
 var bufferLoader;
 const loadTrackSound = (list) => {

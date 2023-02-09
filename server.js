@@ -12,18 +12,21 @@ var certificate = fs.readFileSync('./file.crt', 'utf8');
 var credentials = { key: privateKey, cert: certificate };
 
 // Init globals variables for each module required
-const app = express(),
-  http = require("http"),
-  server = http.createServer(app);
-
+const app = express()
 // Config
-const TRACKS_PATH = "./client/multitrack"
 app.use(express.json())
 app.use(express.static(path.resolve(__dirname, "client")));
-// launch the http server on given port
-server.listen(9999, "172.16.8.66", () => {
-  const addr = server.address();
-  console.log("server listening at", addr.address + ":" + addr.port);
+
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(credentials, app);
+// launch the http server
+const PORT = 9998
+const SSLPORT = 9999
+httpServer.listen(PORT, function() {
+  console.log('HTTP Server is running on: http://localhost:%s', PORT);
+});
+httpsServer.listen(SSLPORT, function() {
+  console.log('HTTPS Server is running on: https://localhost:%s', SSLPORT);
 });
 
 app.get("/", (req, res) => res.sendfile(__dirname + "/client/index.html"));
@@ -33,18 +36,20 @@ app.post("/api/getInfo", async (req, res) => {
   const params = req.body
   console.log('params:', params);
   const soneName = 'Hells_Bells'
-  const fileNames = await getFiles(`${TRACKS_PATH}/${soneName}`);
+  const fileNames = await getFiles(`./client/multitrack/${soneName}`);
   res.writeHead(200, { "Content-Type": "application/json" });
   const tracks = fileNames
     .filter(fileName => isASoundFile(fileName))
-    .map(fileName => ({
-      name: fileName.match(/(.*)\.[^.]+$/, "")[1],
-      sound: fileName,
-      url: 'multitrack' +`/${soneName}/${fileName}`,
-      volume: 100,
-      startTime: 10, // s
-      endTime: 15 // s
-    }))
+    .map((fileName, index) => {
+      return {
+        name: fileName.match(/(.*)\.[^.]+$/, "")[1],
+        sound: fileName,
+        url: 'multitrack' +`/${soneName}/${fileName}`,
+        volume: 1,
+        startTime: 0, // s
+        endTime: 5 + index * 5// s
+      }
+    })
   res.write(JSON.stringify(tracks));
   res.end();
 });
