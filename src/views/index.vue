@@ -25,7 +25,7 @@ const sendRequest = debounce(() => {
   axios.post("/api/getInfo").then((res) => {
     loadAllTracks(res.data);
   });
-}, 500);
+}, 2000);
 
 const state = reactive({
   tracks: [],
@@ -52,12 +52,12 @@ function Track(instrument) {
 }
 
 const loadAllTracks = (tracks) => {
+  stopAllTracks()
   const trackList = [];
   tracks.forEach((track) => {
     trackList.push(new Track(track));
   });
   state.tracks = trackList;
-  console.log("trackList", trackList);
   loadTrackSound(trackList);
 };
 
