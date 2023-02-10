@@ -8,8 +8,10 @@ import axios from "axios";
 import { reactive } from "vue";
 import { getAudioContext } from "@/utils/common";
 import BufferLoader from "./buffer-loader.js";
+import Track from "./track.js";
 import Sensor from "./Sensor/Sensor.vue";
 
+console.log(Track);
 const sensorChange = (params) => {
   if (params) {
     sendRequest(params);
@@ -39,16 +41,6 @@ const state = reactive({
   analyserNode: null,
 });
 
-function Track(instrument) {
-  this.name = instrument.name;
-  this.url = instrument.url;
-  this.startTime = instrument.startTime;
-  this.endTime = instrument.endTime;
-  this.decodedBuffer;
-  this.volume = 1;
-  this.sampleNode;
-  this.volumeNode;
-}
 
 const loadAllTracks = (tracks) => {
   stopAllTracks()

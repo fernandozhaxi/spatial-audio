@@ -46,8 +46,8 @@ app.post("/api/getInfo", async (req, res) => {
         sound: fileName,
         url: 'multitrack' +`/${soneName}/${fileName}`,
         volume: 1,
-        startTime: 0, // s
-        endTime: 0.8// s
+        startTime: 0,
+        endTime: 1
       }
     })
   res.write(JSON.stringify(tracks));
