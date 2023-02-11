@@ -10,8 +10,8 @@ import { getAudioContext } from "@/utils/common";
 import BufferLoader from "./buffer-loader.js";
 import Track from "./track.js";
 import Sensor from "./Sensor/Sensor.vue";
+import * as Tone from 'tone'
 
-console.log(Track);
 const sensorChange = (params) => {
   if (params) {
     sendRequest(params);
@@ -83,6 +83,8 @@ const finishedLoading = (bufferList) => {
 };
 
 const startTask = (track, node, vNode) => {
+  const synth = new Tone.Synth().toDestination();
+  synth.triggerAttackRelease("C4", "8n");
   vNode.gain.value = track.volume
   node.start(0, track.startTime);
   const start = track.startTime
