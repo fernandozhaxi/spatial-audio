@@ -42,7 +42,7 @@ export function throttle(fn, wait) {
 export const getAudioContext = () => {
   const audioContext = window.AudioContext || window.webkitAudioContext;
   var ctx = new audioContext();
-  if (ctx === undefined) {
+  if (!ctx) {
     throw new Error("AudioContext is not supported. :(");
   }
   return ctx;
