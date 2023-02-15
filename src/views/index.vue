@@ -59,19 +59,28 @@ const finishedLoading = (bufferList) => {
   state.analyserNode = context.createAnalyser();
   var sources = [];
   for (var i = 0; i < state.tracks.length; i++) {
-    // each sound sample is the  source of a graph
+    // 为每个音频创建一个节点，代表输入源
     sources[i] = context.createBufferSource();
     sources[i].buffer = state.tracks[i].decodedBuffer;
-    // connect each sound sample to a volume node
+    // 创建处理节点，用于控制音频振幅
     state.trackVolumeNodes[i] = context.createGain();
     state.trackVolumeNodes[i].gain.value = state.tracks[i].volume;
-    // Connect the sound sample to its volume node
+    // 输入源节点通过 connect 方法将音频数据传输给处理节点
     sources[i].connect(state.trackVolumeNodes[i]);
     // Connects all track volume nodes a single master volume node
     state.trackVolumeNodes[i].connect(state.analyserNode);
   }
-  // connect the analyzer to the speakers
+  // 处理节点通过 connect 方法将处理后的音频数据输出给输出节点进行效果输出
+  // destination 为当前使用的扬声器
   state.analyserNode.connect(context.destination);
+
+  // 为 listener 设置 position
+  const listener = audioCtx.listener;
+  // listener.positionX = camera.position.x;
+  // listener.positionY = camera.position.y;
+  // listener.positionZ = camera.position.z;
+
+  // 开始播放
   sources.forEach((node, index) => {
     // First parameter is the delay before playing the sample
     // second one is the offset in the song, in seconds, can be 2.3456
