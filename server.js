@@ -35,19 +35,17 @@ app.get("/", (req, res) => res.sendfile(__dirname + "/client/index.html"));
 app.post("/api/getInfo", async (req, res) => {
   const params = req.body
   console.log('params:', params);
-  const soneName = 'Hells_Bells'
-  const fileNames = await getFiles(`./client/multitrack/${soneName}`);
+  const fileNames = await getFiles(`./client/multitrack/`);
   res.writeHead(200, { "Content-Type": "application/json" });
   const tracks = fileNames
     .filter(fileName => isASoundFile(fileName))
     .map((fileName, index) => {
       return {
-        name: fileName.match(/(.*)\.[^.]+$/, "")[1],
-        sound: fileName,
-        url: 'multitrack' +`/${soneName}/${fileName}`,
+        name: fileName,
+        url: 'multitrack' +`/${fileName}`,
         volume: 1,
         startTime: 0,
-        endTime: 1
+        endTime: 100
       }
     })
   res.write(JSON.stringify(tracks));

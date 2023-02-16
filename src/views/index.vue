@@ -38,9 +38,8 @@ const state = reactive({
   tracks: [],
   sampleNodes: [],
   trackVolumeNodes: [],
-  analyserNode: null,
+  analyserNode: null
 });
-
 
 const loadAllTracks = (tracks) => {
   stopAllTracks()
@@ -71,15 +70,59 @@ const finishedLoading = (bufferList) => {
     state.trackVolumeNodes[i].connect(state.analyserNode);
   }
   // 处理节点通过 connect 方法将处理后的音频数据输出给输出节点进行效果输出
-  // destination 为当前使用的扬声器
-  state.analyserNode.connect(context.destination);
 
   // 为 listener 设置 position
-  const listener = audioCtx.listener;
-  // listener.positionX = camera.position.x;
-  // listener.positionY = camera.position.y;
-  // listener.positionZ = camera.position.z;
+  const listener = context.listener;
+  listener.positionX.value = 0;
+  listener.positionY.value = 0;
+  listener.positionZ.value = 0;
+  listener.forwardX.value = 0;
+  listener.forwardY.value = 0;
+  listener.forwardZ.value = -1;
 
+  // 音源初始位置信息
+  const audioPosition = [0, 0, 1]
+  // 创建和设置 PannerNode
+  const pannerNode = new PannerNode(context, {
+    panningModel: "HRTF",  // 音频空间化算法模型
+    distanceModel: "linear",  // 远离时的音量衰减算法
+    rolloffFactor: 1,  // 衰减速度
+    coneInnerAngle: 360, // 声音 360 度扩散
+    positionX: audioPosition[0],
+    positionY: audioPosition[1],
+    positionZ: audioPosition[2],
+    maxDistance: 10000,
+  });
+
+  // 设置音源自动分别沿 xyz 三个轴来回移动效果，形成环绕效果
+  function autoMove(axis, interval, step = 100, maxDistance = 1000) {
+    let isAdd = true
+    const positionAxisMap = ["positionX", "positionY", "positionZ"]
+    setInterval(() => {
+      if (isAdd && audioPosition[axis] >= maxDistance) {
+        isAdd = false;
+      } else if (!isAdd && audioPosition[axis] <= -maxDistance) {
+        isAdd = true;
+      }
+      if (isAdd) {
+        audioPosition[axis] += step;
+      } else {
+        audioPosition[axis] -= step;
+      }
+      pannerNode[positionAxisMap[axis]].value = audioPosition[axis]
+    }, interval)
+  }
+  // 沿 x 轴在 -1000 到 1000 之间来回移动
+  // autoMove(0, 100, 100, 1000)
+  // 沿 y 轴在 -100 到 100 之间来回移动
+  autoMove(1, 400, 10, 100)
+  // // 沿 z 轴在 -1000 到 1000 之间来回移动
+  // autoMove(2, 200, 100, 1000)
+
+  state.analyserNode.connect(pannerNode);
+  // 将处理节点连接到 destination 输出节点进行效果输出。
+  // destination 为当前使用的扬声器
+  pannerNode.connect(context.destination);
   // 开始播放
   sources.forEach((node, index) => {
     // First parameter is the delay before playing the sample
