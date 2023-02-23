@@ -24,7 +24,7 @@ let context = getAudioContext();
 let lastTime
 const sendRequest = (params) => {
   const now = new Date().getTime()
-  if (now - lastTime < 3000) return
+  if (now - lastTime < 2000) return
   axios.post("/api/getInfo", params).then((res) => {
     const list = res.data
     if (list.length) {
@@ -115,7 +115,7 @@ const finishedLoading = (bufferList) => {
   // 沿 x 轴在 -1000 到 1000 之间来回移动
   // autoMove(0, 100, 100, 1000)
   // 沿 y 轴在 -100 到 100 之间来回移动
-  autoMove(1, 400, 10, 100)
+  // autoMove(1, 400, 10, 100)
   // // 沿 z 轴在 -1000 到 1000 之间来回移动
   // autoMove(2, 200, 100, 1000)
 
